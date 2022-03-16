@@ -70,10 +70,9 @@ async def compress(event, msg, ffmpeg_cmd=0, ps_name=None):
     await edit.edit("Extracting metadata...")
     vid = ffmpeg.probe(name)
     codec = vid['streams'][0]['codec_name']
-    hgt = video_metadata(name)["height"]
-    wdt = video_metadata(name)["width"]
+    hgt = 1
     if ffmpeg_cmd == 2:
-        if hgt == 360 or wdt == 640:
+        if hgt == 0:
             await log.delete()
             await LOG_END(event, log_end_text)
             await edit.edit("Fast compress cannot be used for this media, try using HEVC!")
@@ -95,15 +94,14 @@ async def compress(event, msg, ffmpeg_cmd=0, ps_name=None):
             return
     FT = time.time()
     progress = f"progress-{FT}.txt"
-    cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" None """{out}""" -y'
     if ffmpeg_cmd == 1:
-        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -preset ultrafast -vcodec libx265 -crf 28 -acodec copy """{out}""" -y'
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -metadata title="Compressed with @compress_a_video_bot" -vcodec libx265 -crf 25 -ac 2 """{out}""" -y'
     elif ffmpeg_cmd == 2:
-        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -c:v libx265 -crf 22 -preset ultrafast -s 640x360 -c:a copy """{out}""" -y'
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -metadata title="Compressed with @compress_a_video_bot" -vf scale="-2:360:flags=lanczos" -c:v libx264 -crf 22 -preset veryfast -c:a copy """{out}""" -y'
     elif ffmpeg_cmd == 3:
-        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -preset ultrafast -vcodec libx265 -crf 18 -acodec copy """{out}""" -y'
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -metadata title="Compressed with @compress_a_video_bot" -preset veryfast -vcodec libx265 -crf 25 -acodec copy -ac 2 """{out}""" -y'
     elif ffmpeg_cmd == 4:
-        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -preset ultrafast -vcodec libx264 -crf 18 -acodec copy """{out}""" -y'
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -metadata title="Compressed with @compress_a_video_bot" -preset veryfast -vcodec libx264 -crf 28 -acodec aac -b:a 128k -ac 2 -movflags +faststart """{out}""" -y'
     try:
         await ffmpeg_progress(cmd, name, progress, FT, edit, ps_name, log=log)
     except Exception as e:
@@ -170,6 +168,3 @@ async def compress(event, msg, ffmpeg_cmd=0, ps_name=None):
     await log.delete()
     log_end_text2 = f'**{_ps} PROCESS FINISHED**\n\nTime Taken: {round((time.time()-DT)/60)} minutes\nInitial size: {i_size/1000000}mb.\nFinal size: {f_size/1000000}mb.\n\n[Bot is free now.]({SUPPORT_LINK})'
     await LOG_END(event, log_end_text2)
-    
-
-
