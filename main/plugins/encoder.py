@@ -90,14 +90,14 @@ async def encode(event, msg, scale=0):
     FT = time.time()
     progress = f"progress-{FT}.txt"
     cmd = ''
-    if scale == 240:
-        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -c:v libx264 -pix_fmt yuv420p -preset ultrafast -s 426x240 -crf 18 -c:a libopus -ac 2 -ab 128k -c:s copy """{out}""" -y'
+     if scale == 240:
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -metadata title="Encoded with @compress_a_video_bot" -filter:v scale="-2:240:flags=lanczos" -pix_fmt yuv420p -c:v libx264 -crf 25 -c:a copy -b:a 128k -ac 2 -movflags +faststart """{out}""" -y'
     elif scale == 360:
-        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -c:v libx264 -pix_fmt yuv420p -preset ultrafast -s 640x360 -crf 20 -c:a libopus -ac 2 -ab 128k -c:s copy """{out}""" -y'
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -metadata title="Encoded with @compress_a_video_bot" -filter:v scale="-2:360:flags=lanczos" -pix_fmt yuv420p -c:v libx264 -crf 25 -c:a copy -b:a 128k -ac 2 -movflags +faststart """{out}""" -y'
     elif scale == 480:
-        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -c:v libx264 -pix_fmt yuv420p -preset ultrafast -s 854x480 -crf 23 -c:a libopus -ac 2 -ab 128k -c:s copy """{out}""" -y'
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -metadata title="Encoded with @compress_a_video_bot" -filter:v scale="-2:480:flags=lanczos" -pix_fmt yuv420p -c:v libx264 -crf 25 -c:a copy -b:a 128k -ac 2 -movflags +faststart """{out}""" -y'
     elif scale == 720:
-        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -c:v libx264 -pix_fmt yuv420p -preset ultrafast -s 1280x720 -crf 27 -c:a libopus -ac 2 -ab 128k -c:s copy """{out}""" -y'
+        cmd = f'ffmpeg -hide_banner -loglevel quiet -progress {progress} -i """{name}""" -metadata title="Encoded with @compress_a_video_bot" -filter:v scale="-2:720:flags=lanczos" -pix_fmt yuv420p -c:v libx264 -crf 25 -c:a copy -b:a 128k -ac 2 -movflags +faststart """{out}""" -y'
     try:
         await ffmpeg_progress(cmd, name, progress, FT, edit, ps_name, log=log)
     except Exception as e:
